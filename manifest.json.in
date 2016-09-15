@@ -1,0 +1,17 @@
+{
+    "name": "kontextprojektraspberrypi.9lindt",
+    "description": "description of KontextProjektRaspberryPi",
+    "architecture": "@CLICK_ARCH@",
+    "title": "KontextProjektRaspberryPi",
+    "hooks": {
+        "KontextProjektRaspberryPi": {
+            "apparmor": "KontextProjektRaspberryPi/KontextProjektRaspberryPi.apparmor",
+            "desktop":  "KontextProjektRaspberryPi/KontextProjektRaspberryPi.desktop"
+        }
+    },
+    "version": "0.1",
+    "maintainer": "Paul Lindt <9lindt@informatik.uni-hamburg.de>",
+    "framework" : "ubuntu-sdk-15.04.6"
+}
+
+

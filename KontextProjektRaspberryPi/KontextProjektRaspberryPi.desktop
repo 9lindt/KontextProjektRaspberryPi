@@ -1,0 +1,8 @@
+[Desktop Entry]
+_Name=KontextProjektRaspberryPi
+Exec=qmlscene %U KontextProjektRaspberryPi/Main.qml
+Icon=KontextProjektRaspberryPi/KontextProjektRaspberryPi.png
+Terminal=false
+Type=Application
+X-Ubuntu-Touch=true
+
