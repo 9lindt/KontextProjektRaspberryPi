@@ -17,10 +17,11 @@ class GPIOPin : public QObject
 
     static const QString VALUE_PATH ;
     static const QString DIRECTION_PATH   ;
+    static const QString EDGE_PATH   ;
     static const QString EXPORT_PATH      ;
     static const QString UNEXPORT_PATH    ;
 
-    static QFileSystemWatcher fileWatcher;
+    QFileSystemWatcher * fileWatcher;
 
     int m_pinNumber;
 
@@ -47,8 +48,9 @@ signals:
 
 public slots:
     void setOn(bool on);
-
     void setActor(bool actor);
+
+    void fileChanged(const QString & path);
 
 private:
     void init();
@@ -59,6 +61,8 @@ private:
     void writeValue();
 
     bool m_actor;
+    void registerObserver();
+    void deregisterObserver();
 };
 
 #endif // GPIOPIN_H

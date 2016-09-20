@@ -10,6 +10,10 @@ FoodBox::FoodBox(QObject *parent) :
     addWatcher(new WeightWatcher());
     m_lock = new LEDLock();
 
+    pin12 = new GPIOPin(12, false);
+    pin12 = new GPIOPin(13, false);
+    pin16 = new GPIOPin(16, false);
+
     runWatchers();
 
 }

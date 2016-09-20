@@ -28,6 +28,7 @@ class FoodBox : public QObject
     QQmlListProperty<BackgroundProcess> m_qmlListWatchers;
 
     LEDLock * m_lock;
+    GPIOPin * pin12, * pin13,* pin16;
 
 public:
     explicit FoodBox(QObject *parent = 0);

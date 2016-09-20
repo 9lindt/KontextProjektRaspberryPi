@@ -5,6 +5,8 @@
 
 const QString GPIOPin::VALUE_PATH = QString("/sys/class/gpio/gpio%1/value");
 const QString GPIOPin::DIRECTION_PATH = QString("/sys/class/gpio/gpio%1/direction");
+const QString GPIOPin::EDGE_PATH = QString("/sys/class/gpio/gpio%1/direction");
+
 const QString GPIOPin::EXPORT_PATH = QString("/sys/class/gpio/export");
 const QString GPIOPin::UNEXPORT_PATH = QString("/sys/class/gpio/unexport");
 
@@ -29,6 +31,7 @@ GPIOPin::GPIOPin(int pinNumber, bool actor, QObject *parent)
     ,   m_pinNumber(pinNumber)
     ,   m_actor(actor)
 {
+    fileWatcher = new QFileSystemWatcher();
     init();
 
 }
@@ -68,6 +71,11 @@ void GPIOPin::setActor(bool actor)
 
 
     emit actorChanged(actor);
+}
+
+void GPIOPin::fileChanged(const QString &path)
+{
+    qDebug() << "pins active :" << path;
 }
 
 void GPIOPin::init()
@@ -146,9 +154,27 @@ void GPIOPin::writeValue()
 
 void GPIOPin::registerObserver(){
 
+
+    QFile file(QString(EDGE_PATH).arg(pinNumber()));
+    file.setPermissions(PERMIT_EVERYTHING);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+
+        qDebug() << "can't open file for GPIO pin value. might not have permission";
+    } else {
+        QTextStream out(&file);
+        out <<"both";
+    }
+    file.close();
+    qDebug() << QString("edge written for pin %1").arg( pinNumber());
+
+
+    connect(fileWatcher, &QFileSystemWatcher::fileChanged, this, &GPIOPin::fileChanged);
+    fileWatcher->addPath(VALUE_PATH.arg(pinNumber()));
+
+
 }
 
 void GPIOPin::deregisterObserver(){
-
+    fileWatcher->removePath(VALUE_PATH.arg(pinNumber()));
 }
 
