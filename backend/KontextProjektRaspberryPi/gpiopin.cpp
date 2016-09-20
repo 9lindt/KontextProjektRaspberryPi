@@ -3,10 +3,23 @@
 #include <QDebug>
 
 
-const QString GPIOPin::VALUE_PATH = QString("/sys/class/gpio/gpio%d/value");
-const QString GPIOPin::DIRECTION_PATH = QString("/sys/class/gpio/gpio%d/direction");
+const QString GPIOPin::VALUE_PATH = QString("/sys/class/gpio/gpio%1/value");
+const QString GPIOPin::DIRECTION_PATH = QString("/sys/class/gpio/gpio%1/direction");
 const QString GPIOPin::EXPORT_PATH = QString("/sys/class/gpio/export");
 const QString GPIOPin::UNEXPORT_PATH = QString("/sys/class/gpio/unexport");
+
+static QFileDevice::Permissions PERMIT_EVERYTHING = QFileDevice::ReadOwner |
+        QFileDevice::WriteOwner |
+        QFileDevice::ExeOwner	|
+        QFileDevice::ReadUser	|
+        QFileDevice::WriteUser|
+        QFileDevice::ExeUser	|
+        QFileDevice::ReadGroup|
+        QFileDevice::WriteGroup|
+        QFileDevice::ExeGroup|
+        QFileDevice::ReadOther|
+        QFileDevice::WriteOther|
+        QFileDevice::ExeOther;
 
 
 
@@ -51,6 +64,9 @@ void GPIOPin::setActor(bool actor)
         return;
 
     m_actor = actor;
+    writeDirection();
+
+
     emit actorChanged(actor);
 }
 
@@ -91,19 +107,32 @@ void GPIOPin::unexportPin()
 void GPIOPin::writeDirection()
 {
     QFile file(DIRECTION_PATH.arg(pinNumber()));
+    file.setPermissions(PERMIT_EVERYTHING);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
 
         qDebug() << "can't open file for GPIO pin direction. might not have permission";
     } else {
         QTextStream out(&file);
-        out << pinNumber();
+        actor()?out << "out":out << "in";
     }
     file.close();
+
+
+    if(!m_actor){
+        registerObserver();
+    } else {
+        deregisterObserver();
+    }
+
+
+
+    qDebug() << QString("direction %1 set for pin %2").arg(actor(), pinNumber());
 }
 
 void GPIOPin::writeValue()
 {
     QFile file(QString(VALUE_PATH).arg(pinNumber()));
+    file.setPermissions(PERMIT_EVERYTHING);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
 
         qDebug() << "can't open file for GPIO pin value. might not have permission";
@@ -112,5 +141,14 @@ void GPIOPin::writeValue()
         isOn()? out <<"1": out << "0";
     }
     file.close();
+    qDebug() << QString("value %1 written for pin %2").arg(isOn(), pinNumber());
+}
+
+void GPIOPin::registerObserver(){
+
+}
+
+void GPIOPin::deregisterObserver(){
+
 }
 

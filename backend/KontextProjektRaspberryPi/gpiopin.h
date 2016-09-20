@@ -2,6 +2,7 @@
 #define GPIOPIN_H
 
 #include <QObject>
+#include <QFileSystemWatcher>
 
 class GPIOPin : public QObject
 {
@@ -18,6 +19,8 @@ class GPIOPin : public QObject
     static const QString DIRECTION_PATH   ;
     static const QString EXPORT_PATH      ;
     static const QString UNEXPORT_PATH    ;
+
+    static QFileSystemWatcher fileWatcher;
 
     int m_pinNumber;
 

@@ -2,6 +2,7 @@
 #include <QtQml/QQmlContext>
 #include "backend.h"
 #include "foodbox.h"
+#include "ledlock.h"
 #include "backgroundprocess.h"
 
 
@@ -11,6 +12,7 @@ void BackendPlugin::registerTypes(const char *uri)
 
     qmlRegisterType<FoodBox>(uri, 1, 0, "FoodBox");
     qmlRegisterType<BackgroundProcess>(uri, 1, 0, "BackgroundProcess");
+    qmlRegisterType<LEDLock>(uri, 1, 0, "BackgroundProcess");
 
 
     qRegisterMetaType<BackgroundProcess::ProcessState>("BackgroundProcess::ProcessState");

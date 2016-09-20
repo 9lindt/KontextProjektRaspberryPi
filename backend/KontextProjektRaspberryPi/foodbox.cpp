@@ -8,6 +8,7 @@ FoodBox::FoodBox(QObject *parent) :
 {
     m_state = PROCESSING;
     addWatcher(new WeightWatcher());
+    m_lock = new LEDLock();
 
     runWatchers();
 
@@ -25,6 +26,11 @@ FoodBox::FoodBoxStateEnum FoodBox::state() const
 QQmlListProperty<BackgroundProcess> FoodBox::watchers()
 {
     return QQmlListProperty<BackgroundProcess>(this, m_watchers);
+}
+
+LEDLock *FoodBox::lock() const
+{
+    return m_lock;
 }
 
 void FoodBox::setState(FoodBox::FoodBoxStateEnum state)

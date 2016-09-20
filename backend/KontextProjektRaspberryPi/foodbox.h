@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <backgroundprocess.h>
+#include <ledlock.h>
 #include<QQmlListProperty>
 
 
@@ -17,6 +18,7 @@ class FoodBox : public QObject
     Q_PROPERTY(FoodBoxStateEnum state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(QQmlListProperty<BackgroundProcess> watchers READ watchers NOTIFY watchersChanged)
 
+    Q_PROPERTY(LEDLock * lock READ lock)
 
 
 
@@ -24,6 +26,8 @@ class FoodBox : public QObject
 
     QList<BackgroundProcess *> m_watchers;
     QQmlListProperty<BackgroundProcess> m_qmlListWatchers;
+
+    LEDLock * m_lock;
 
 public:
     explicit FoodBox(QObject *parent = 0);
@@ -34,6 +38,8 @@ public:
     FoodBoxStateEnum state() const;
 
     QQmlListProperty<BackgroundProcess> watchers();
+
+    LEDLock * lock() const;
 
 public slots:
     void setState(FoodBoxStateEnum state);

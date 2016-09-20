@@ -85,8 +85,10 @@ Rectangle {
                     onClicked: {
                         if(box.state === "open"){
                             box.helloWorld = ("..from Cpp Backend")
+                            box.lock.locked = true;
                         } else {
                             box.helloWorld = "box is already open"
+                            box.lock.locked = false;
 
                         }
 //console.log(box.state);
