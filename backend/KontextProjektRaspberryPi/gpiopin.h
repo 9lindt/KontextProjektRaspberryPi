@@ -2,7 +2,8 @@
 #define GPIOPIN_H
 
 #include <QObject>
-#include <QFileSystemWatcher>
+#include <QSocketNotifier>
+#include <QFile>
 
 class GPIOPin : public QObject
 {
@@ -21,7 +22,8 @@ class GPIOPin : public QObject
     static const QString EXPORT_PATH      ;
     static const QString UNEXPORT_PATH    ;
 
-    QFileSystemWatcher * fileWatcher;
+    QSocketNotifier * socket_notifier_read, * socket_notifier_exception;
+    QFile * observed_file;
 
     int m_pinNumber;
 
@@ -51,6 +53,7 @@ public slots:
     void setActor(bool actor);
 
     void fileChanged(const QString & path);
+    void readyRead( int a);
 
 private:
     void init();
@@ -61,8 +64,11 @@ private:
     void writeValue();
 
     bool m_actor;
+
     void registerObserver();
     void deregisterObserver();
+    QByteArray m_oldValue;
+    void writeEdge();
 };
 
 #endif // GPIOPIN_H

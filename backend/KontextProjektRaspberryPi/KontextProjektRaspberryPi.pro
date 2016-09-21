@@ -15,7 +15,10 @@ SOURCES += \
     weightwatcher.cpp \
     gpiopin.cpp \
     ledlock.cpp \
-    scale.cpp
+    scale.cpp \
+    gpiobutton.cpp \
+    gpiorotaryencoder.cpp \
+    gpiopinwatcher.cpp
 
 HEADERS += \
     backend.h \
@@ -24,7 +27,10 @@ HEADERS += \
     weightwatcher.h \
     gpiopin.h \
     ledlock.h \
-    scale.h
+    scale.h \
+    gpiobutton.h \
+    gpiorotaryencoder.h \
+    gpiopinwatcher.h
 
 OTHER_FILES = qmldir
 

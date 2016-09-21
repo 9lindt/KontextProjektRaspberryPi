@@ -80,36 +80,60 @@ Rectangle {
                 radius: parent.height /4
                 color: box.watchers[0].condition === BackgroundProcess.GREEN?"green":"red"
 
-                MouseArea{
-                    anchors.fill: parent
-                    onClicked: {
-                        if(box.state === "open"){
-                            box.helloWorld = ("..from Cpp Backend")
-                            box.lock.locked = true;
-                        } else {
-                            box.helloWorld = "box is already open"
-                            box.lock.locked = false;
 
-                        }
-//console.log(box.state);
-
-                    }
-                }
                 Text {
+                    id:textField
                     anchors.centerIn: parent
                     text: box.helloWorld
                     color: "white"
 
-                }
+
                         FoodBox {
                             id: box
                             //anchors.fill: parent
 
+                            lock.locked : box.watchers[0].condition === BackgroundProcess.GREEN
+
+//                            watchers.onWatchersChanged: {
+//                                console.log('cond changed');
+//                            }
+
+
+
+
+
+//                            lock.onLockedChanged: {
+//                                console.log("locked:" + locked);
+
+//                            }
+
                             Component.onCompleted: {
-                                box.helloWorld = ("Hello world..");
+                                box.helloWorld = watchers[0].condition;
 
                             }
+//                            radioDial.onRotationLeft: {
+
+//                                console.log("qml rotation left");
+//                                console.log("condition:" + box.watchers[0].condition);
+//                                //indicator.rotation = indicator.rotation + 10;
+//                                //lock.locked = true;
+//                            }
+//                            radioDial.onRotationRight: {
+//                                console.log("qml rotation right");
+//                                //indicator.rotation = indicator.rotation - 10;
+//                                //lock.locked = false;
+//                            }
+                            radioDial.onClick: {
+                                console.log("qml radio dial click");
+                            }
+                            radioDial.onPressedChanged: {
+                                console.log("qml radio pressed:" + pressed);
+                                textField.color = pressed?"white":"black"
+                            }
+
+
                         }
+            }
             }
 
 }

@@ -1,6 +1,6 @@
 #include "backgroundprocess.h"
 
-BackgroundProcess::BackgroundProcess(QObject *parent) : QThread()
+BackgroundProcess::BackgroundProcess(QObject *parent) : QThread(parent )
 {
 
 }

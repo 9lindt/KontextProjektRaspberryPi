@@ -7,8 +7,9 @@
 
 class WeightWatcher : public BackgroundProcess
 {
+    Q_OBJECT
 public:
-    WeightWatcher();
+    WeightWatcher(QObject *parent = 0);
     virtual void run();
 };
 

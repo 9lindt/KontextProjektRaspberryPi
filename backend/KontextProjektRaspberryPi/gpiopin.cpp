@@ -31,7 +31,6 @@ GPIOPin::GPIOPin(int pinNumber, bool actor, QObject *parent)
     ,   m_pinNumber(pinNumber)
     ,   m_actor(actor)
 {
-    fileWatcher = new QFileSystemWatcher();
     init();
 
 }
@@ -58,6 +57,7 @@ void GPIOPin::setOn(bool on)
 
     m_on = on;
     writeValue();
+    //    qDebug() << "pin :" << pinNumber() << " is :" << isOn();
     emit onChanged(on);
 }
 
@@ -73,9 +73,19 @@ void GPIOPin::setActor(bool actor)
     emit actorChanged(actor);
 }
 
-void GPIOPin::fileChanged(const QString &path)
+
+
+void GPIOPin::readyRead(int a)
 {
-    qDebug() << "pins active :" << path;
+    QByteArray newValue = observed_file->readAll();
+    if(QString(newValue) != QString(m_oldValue)){
+        //qDebug() << "pins active :" << pinNumber() << " avail:" << a  << ":"<<  newValue.toHex() ;
+        m_oldValue= newValue;
+        setOn(!isOn());
+
+    }
+    observed_file->close();
+    registerObserver();
 }
 
 void GPIOPin::init()
@@ -124,57 +134,71 @@ void GPIOPin::writeDirection()
         actor()?out << "out":out << "in";
     }
     file.close();
-
-
     if(!m_actor){
-        registerObserver();
+               //registerObserver();
+
+        writeEdge();
     } else {
-        deregisterObserver();
+        //deregisterObserver();
     }
 
 
 
-    qDebug() << QString("direction %1 set for pin %2").arg(actor(), pinNumber());
+    //    qDebug() << QString("direction %1 set for pin %2").arg(actor(), pinNumber());
 }
 
-void GPIOPin::writeValue()
-{
-    QFile file(QString(VALUE_PATH).arg(pinNumber()));
-    file.setPermissions(PERMIT_EVERYTHING);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
-
-        qDebug() << "can't open file for GPIO pin value. might not have permission";
-    } else {
-        QTextStream out(&file);
-        isOn()? out <<"1": out << "0";
-    }
-    file.close();
-    qDebug() << QString("value %1 written for pin %2").arg(isOn(), pinNumber());
-}
-
-void GPIOPin::registerObserver(){
-
-
+void GPIOPin::writeEdge(){
     QFile file(QString(EDGE_PATH).arg(pinNumber()));
     file.setPermissions(PERMIT_EVERYTHING);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
 
-        qDebug() << "can't open file for GPIO pin value. might not have permission";
+        qDebug() << "can't open file for GPIO pin edge. might not have permission";
     } else {
         QTextStream out(&file);
         out <<"both";
     }
     file.close();
     qDebug() << QString("edge written for pin %1").arg( pinNumber());
+}
 
 
-    connect(fileWatcher, &QFileSystemWatcher::fileChanged, this, &GPIOPin::fileChanged);
-    fileWatcher->addPath(VALUE_PATH.arg(pinNumber()));
+void GPIOPin::writeValue()
+{
+    if(actor())
+    {
+        QFile file(QString(VALUE_PATH).arg(pinNumber()));
+        file.setPermissions(PERMIT_EVERYTHING);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+
+            qDebug() << "can't open file for GPIO pin value. might not have permission";
+        } else {
+            QTextStream out(&file);
+            isOn()? out <<"1": out << "0";
+        }
+        file.close();
+        //    qDebug() << QString("value %1 written for pin %2").arg(isOn(), pinNumber());
+    }
+}
+
+void GPIOPin::registerObserver(){
+
+    //    connect(fileWatcher, &QFileSystemWatcher::fileChanged, this, &GPIOPin::fileChanged);
+    //    fileWatcher->addPath(VALUE_PATH.arg(pinNumber()));
+
+    observed_file = new QFile(VALUE_PATH.arg(pinNumber()));
+    //observed_file->setPermissions(PERMIT_EVERYTHING);
+    observed_file->open(QIODevice::ReadOnly | QIODevice::Text);
+
+
+    socket_notifier_read = new QSocketNotifier(observed_file->handle(), QSocketNotifier::Read);
+
+    connect(socket_notifier_read, &QSocketNotifier::activated, this, &GPIOPin::readyRead);
+    socket_notifier_read->setEnabled(true);
 
 
 }
 
 void GPIOPin::deregisterObserver(){
-    fileWatcher->removePath(VALUE_PATH.arg(pinNumber()));
+    //    fileWatcher->removePath(VALUE_PATH.arg(pinNumber()));
 }
 

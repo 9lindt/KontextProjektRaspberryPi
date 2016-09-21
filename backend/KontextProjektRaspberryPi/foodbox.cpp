@@ -1,18 +1,23 @@
 #include "foodbox.h"
 #include "weightwatcher.h"
 #include <QtConcurrent/QtConcurrent>
+#include <gpiopinwatcher.h>
+
 
 FoodBox::FoodBox(QObject *parent) :
     QObject(parent),
     m_message("")
 {
     m_state = PROCESSING;
-    addWatcher(new WeightWatcher());
-    m_lock = new LEDLock();
 
-    pin12 = new GPIOPin(12, false);
-    pin12 = new GPIOPin(13, false);
-    pin16 = new GPIOPin(16, false);
+    m_lock = new LEDLock();
+    addWatcher(new WeightWatcher());
+    addWatcher(new GPIOPinWatcher());
+
+    m_radioDial = new GPIORotaryEncoder(12,16,6, 13);
+//    m_backButton = new GPIOButton();
+
+
 
     runWatchers();
 
@@ -35,6 +40,16 @@ QQmlListProperty<BackgroundProcess> FoodBox::watchers()
 LEDLock *FoodBox::lock() const
 {
     return m_lock;
+}
+
+GPIORotaryEncoder *FoodBox::radioDial() const
+{
+    return m_radioDial;
+}
+
+GPIOButton *FoodBox::backButton() const
+{
+    return m_backButton;
 }
 
 void FoodBox::setState(FoodBox::FoodBoxStateEnum state)

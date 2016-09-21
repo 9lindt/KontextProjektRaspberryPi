@@ -1,6 +1,8 @@
 #ifndef MYTYPE_H
 #define MYTYPE_H
 
+#include "gpiorotaryencoder.h"
+
 #include <QObject>
 #include <backgroundprocess.h>
 #include <ledlock.h>
@@ -20,6 +22,9 @@ class FoodBox : public QObject
 
     Q_PROPERTY(LEDLock * lock READ lock)
 
+    Q_PROPERTY(GPIORotaryEncoder * radioDial READ radioDial)
+   // Q_PROPERTY(GPIOButton * backButton READ backButton)
+
 
 
 
@@ -27,8 +32,10 @@ class FoodBox : public QObject
     QList<BackgroundProcess *> m_watchers;
     QQmlListProperty<BackgroundProcess> m_qmlListWatchers;
 
-    LEDLock * m_lock;
-    GPIOPin * pin12, * pin13,* pin16;
+    LEDLock * m_lock;    
+    GPIORotaryEncoder * m_radioDial;
+    GPIOButton * m_backButton;
+
 
 public:
     explicit FoodBox(QObject *parent = 0);
@@ -41,6 +48,10 @@ public:
     QQmlListProperty<BackgroundProcess> watchers();
 
     LEDLock * lock() const;
+
+    GPIORotaryEncoder * radioDial() const;
+
+    GPIOButton * backButton() const;
 
 public slots:
     void setState(FoodBoxStateEnum state);

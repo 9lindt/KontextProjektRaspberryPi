@@ -12,11 +12,17 @@ void BackendPlugin::registerTypes(const char *uri)
 
     qmlRegisterType<FoodBox>(uri, 1, 0, "FoodBox");
     qmlRegisterType<BackgroundProcess>(uri, 1, 0, "BackgroundProcess");
-    qmlRegisterType<LEDLock>(uri, 1, 0, "BackgroundProcess");
-
 
     qRegisterMetaType<BackgroundProcess::ProcessState>("BackgroundProcess::ProcessState");
     qRegisterMetaType<BackgroundProcess::ProcessCondition>("BackgroundProcess::ProcessCondition");
+
+
+    qmlRegisterType<LEDLock>(uri, 1, 0, "LEDLock");
+    qmlRegisterType<GPIOButton>(uri, 1, 0, "GPIOButton");
+    qmlRegisterType<GPIORotaryEncoder>(uri, 1, 0, "GPIORotaryEncoder");
+
+
+
 
 //    typedef QList<BackgroundProcess*>  ProcessList;
 

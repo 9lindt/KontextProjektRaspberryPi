@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QThread>
 
-WeightWatcher::WeightWatcher():BackgroundProcess()
+WeightWatcher::WeightWatcher(QObject * parent):BackgroundProcess( parent)
 {
     setCondition(GREEN);
 }
@@ -19,6 +19,7 @@ void WeightWatcher::run()
         if(i > 1){
             setCondition(RED);
             //setState(FINISHING);
+            qDebug() << "weight is not ok";
             //break;
             i = 0;
         } else {
