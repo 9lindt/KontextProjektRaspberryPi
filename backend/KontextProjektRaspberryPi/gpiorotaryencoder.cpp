@@ -4,13 +4,13 @@
 
 GPIORotaryEncoder::GPIORotaryEncoder(int rotationPin1, int rotationPin2, int buttonPin, int powerPin, QObject *parent)
     :   GPIOButton(buttonPin, powerPin, parent)
-    ,   m_rotationPin(rotationPin1/*, false*/)
-    ,   m_directionPin(rotationPin2/*, false*/)
+    ,   m_rotationPin(rotationPin1, false)
+    ,   m_directionPin(rotationPin2, false)
 
 {
 
-    //connect(&m_rotationPin, &GPIOPin::onChanged, this, &GPIORotaryEncoder::pinChanged);
-    //connect(&m_directionPin, &GPIOPin::onChanged, this, &GPIORotaryEncoder::pinChanged);
+    connect(&m_rotationPin, &GPIOPin::onChanged, this, &GPIORotaryEncoder::pinChanged);
+    connect(&m_directionPin, &GPIOPin::onChanged, this, &GPIORotaryEncoder::pinChanged);
 
 }
 

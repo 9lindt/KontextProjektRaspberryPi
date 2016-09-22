@@ -2,8 +2,9 @@
 #include <QFile>
 #include <QDebug>
 
-GPIOPinWatcher::GPIOPinWatcher(QObject *parent)
+GPIOPinWatcher::GPIOPinWatcher(int pinNumber, QObject *parent)
     : BackgroundProcess(parent)
+    , m_pinNumber(pinNumber)
     , m_on(false)
 {
 
@@ -12,7 +13,7 @@ GPIOPinWatcher::GPIOPinWatcher(QObject *parent)
 void GPIOPinWatcher::run()
 {
     while(true){
-        QFile file("/sys/class/gpio/gpio16/value");
+        QFile file(QString("/sys/class/gpio/gpio%1/value").arg(m_pinNumber));
         file.open(QIODevice::ReadOnly | QIODevice::Text);
         QByteArray newValue =  file.readAll();
         if(newValue != m_oldValue){
@@ -32,7 +33,7 @@ void GPIOPinWatcher::setOn(bool on)
 {
     if (m_on == on)
         return;
-    qDebug() << "pressed";
+//    qDebug() << "pressed";
     m_on = on;
     emit onChanged(on);
 }

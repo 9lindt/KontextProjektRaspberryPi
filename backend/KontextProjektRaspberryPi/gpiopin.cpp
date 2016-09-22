@@ -29,6 +29,7 @@ GPIOPin::GPIOPin(int pinNumber, bool actor, QObject *parent)
     :   QObject(parent)
     ,   m_on(false)
     ,   m_pinNumber(pinNumber)
+    ,   m_pinWatcher(pinNumber)
     ,   m_actor(actor)
 {
     init();
@@ -74,19 +75,6 @@ void GPIOPin::setActor(bool actor)
 }
 
 
-
-void GPIOPin::readyRead(int a)
-{
-    QByteArray newValue = observed_file->readAll();
-    if(QString(newValue) != QString(m_oldValue)){
-        //qDebug() << "pins active :" << pinNumber() << " avail:" << a  << ":"<<  newValue.toHex() ;
-        m_oldValue= newValue;
-        setOn(!isOn());
-
-    }
-    observed_file->close();
-    registerObserver();
-}
 
 void GPIOPin::init()
 {
@@ -135,11 +123,12 @@ void GPIOPin::writeDirection()
     }
     file.close();
     if(!m_actor){
-               //registerObserver();
+
 
         writeEdge();
+        registerObserver();
     } else {
-        //deregisterObserver();
+        deregisterObserver();
     }
 
 
@@ -182,23 +171,26 @@ void GPIOPin::writeValue()
 
 void GPIOPin::registerObserver(){
 
-    //    connect(fileWatcher, &QFileSystemWatcher::fileChanged, this, &GPIOPin::fileChanged);
-    //    fileWatcher->addPath(VALUE_PATH.arg(pinNumber()));
+//    //    connect(fileWatcher, &QFileSystemWatcher::fileChanged, this, &GPIOPin::fileChanged);
+//    //    fileWatcher->addPath(VALUE_PATH.arg(pinNumber()));
 
-    observed_file = new QFile(VALUE_PATH.arg(pinNumber()));
-    //observed_file->setPermissions(PERMIT_EVERYTHING);
-    observed_file->open(QIODevice::ReadOnly | QIODevice::Text);
+//    observed_file = new QFile(VALUE_PATH.arg(pinNumber()));
+//    //observed_file->setPermissions(PERMIT_EVERYTHING);
+//    observed_file->open(QIODevice::ReadOnly | QIODevice::Text);
 
 
-    socket_notifier_read = new QSocketNotifier(observed_file->handle(), QSocketNotifier::Read);
+//    socket_notifier_read = new QSocketNotifier(observed_file->handle(), QSocketNotifier::Read);
 
-    connect(socket_notifier_read, &QSocketNotifier::activated, this, &GPIOPin::readyRead);
-    socket_notifier_read->setEnabled(true);
+//    connect(socket_notifier_read, &QSocketNotifier::activated, this, &GPIOPin::readyRead);
+//    socket_notifier_read->setEnabled(true);
+    connect(&m_pinWatcher, &GPIOPinWatcher::onChanged, this, &GPIOPin::setOn);
+    m_pinWatcher.start();
 
 
 }
 
 void GPIOPin::deregisterObserver(){
-    //    fileWatcher->removePath(VALUE_PATH.arg(pinNumber()));
+    disconnect(&m_pinWatcher, &GPIOPinWatcher::onChanged, this, &GPIOPin::setOn);
+    m_pinWatcher.exit(0);
 }
 

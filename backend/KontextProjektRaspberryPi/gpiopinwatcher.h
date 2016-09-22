@@ -9,10 +9,12 @@ class GPIOPinWatcher : public BackgroundProcess
 
     Q_PROPERTY(bool on READ isOn WRITE setOn NOTIFY onChanged)
 
+
+    int m_pinNumber;
     bool m_on;
 
 public:
-    explicit GPIOPinWatcher(QObject *parent = 0);
+    explicit GPIOPinWatcher(int pinNumber, QObject *parent = 0);
 
     void run();
 

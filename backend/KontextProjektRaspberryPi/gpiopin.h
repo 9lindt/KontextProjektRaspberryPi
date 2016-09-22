@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSocketNotifier>
 #include <QFile>
+#include <gpiopinwatcher.h>
 
 class GPIOPin : public QObject
 {
@@ -22,10 +23,8 @@ class GPIOPin : public QObject
     static const QString EXPORT_PATH      ;
     static const QString UNEXPORT_PATH    ;
 
-    QSocketNotifier * socket_notifier_read, * socket_notifier_exception;
-    QFile * observed_file;
-
     int m_pinNumber;
+    GPIOPinWatcher m_pinWatcher;
 
 public:
     explicit GPIOPin(int pinNumber, bool actor= true, QObject *parent = 0);
@@ -67,7 +66,7 @@ private:
 
     void registerObserver();
     void deregisterObserver();
-    QByteArray m_oldValue;
+//    QByteArray m_oldValue;
     void writeEdge();
 };
 

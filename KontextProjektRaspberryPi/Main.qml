@@ -69,71 +69,62 @@ import KontextProjektRaspberryPi 1.0
 
 
 Rectangle {
-        width: Screen.width
-            height: Screen.height
-            color: "gray"
-            Rectangle{
-                id:indicator
-                anchors.centerIn: parent
-                height: parent.height /2
-                width: parent.width /2
-                radius: parent.height /4
-                color: box.watchers[0].condition === BackgroundProcess.GREEN?"green":"red"
+    width: Screen.width
+    height: Screen.height
+    color: "gray"
+    Rectangle{
+        id:indicator
+        anchors.centerIn: parent
+        height: parent.height /2
+        width: parent.width /2
+        radius: parent.height /4
+        color: box.watchers[0].condition === BackgroundProcess.GREEN?"green":"red"
 
 
-                Text {
-                    id:textField
-                    anchors.centerIn: parent
-                    text: box.helloWorld
-                    color: "white"
+        Text {
+            id:textField
+            anchors.centerIn: parent
+            text: box.helloWorld
+            color: "white"
 
 
-                        FoodBox {
-                            id: box
-                            //anchors.fill: parent
+            FoodBox {
+                id: box
+                //anchors.fill: parent
 
-                            lock.locked : box.watchers[0].condition === BackgroundProcess.GREEN
-
-//                            watchers.onWatchersChanged: {
-//                                console.log('cond changed');
-//                            }
+                lock.locked : box.watchers[0].condition === BackgroundProcess.GREEN
 
 
+                Component.onCompleted: {
+                    box.helloWorld = watchers[0].condition;
+
+                }
+                radioDial.onRotationLeft: {
+
+                    console.log("qml rotation left");
+                    indicator.rotation = indicator.rotation + 10;
+                }
+                radioDial.onRotationRight: {
+                    console.log("qml rotation right");
+                    indicator.rotation = indicator.rotation - 10;
+                }
+                radioDial.onClick: {
+                    console.log("qml radio dial click");
+                }
+                radioDial.onPressedChanged: {
+                    console.log("qml radio pressed:" + pressed);
+                    if(pressed){
+                        indicator.scale = indicator.scale * 1.5;
+                    } else {
+                        indicator.scale = indicator.scale * 2/3;
+                    }
+
+                    textField.color = pressed?"white":"black"
+                }
 
 
-
-//                            lock.onLockedChanged: {
-//                                console.log("locked:" + locked);
-
-//                            }
-
-                            Component.onCompleted: {
-                                box.helloWorld = watchers[0].condition;
-
-                            }
-//                            radioDial.onRotationLeft: {
-
-//                                console.log("qml rotation left");
-//                                console.log("condition:" + box.watchers[0].condition);
-//                                //indicator.rotation = indicator.rotation + 10;
-//                                //lock.locked = true;
-//                            }
-//                            radioDial.onRotationRight: {
-//                                console.log("qml rotation right");
-//                                //indicator.rotation = indicator.rotation - 10;
-//                                //lock.locked = false;
-//                            }
-                            radioDial.onClick: {
-                                console.log("qml radio dial click");
-                            }
-                            radioDial.onPressedChanged: {
-                                console.log("qml radio pressed:" + pressed);
-                                textField.color = pressed?"white":"black"
-                            }
-
-
-                        }
             }
-            }
+        }
+    }
 
 }

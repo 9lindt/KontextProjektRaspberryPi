@@ -12,7 +12,6 @@ FoodBox::FoodBox(QObject *parent) :
 
     m_lock = new LEDLock();
     addWatcher(new WeightWatcher());
-    addWatcher(new GPIOPinWatcher());
 
     m_radioDial = new GPIORotaryEncoder(12,16,6, 13);
 //    m_backButton = new GPIOButton();
