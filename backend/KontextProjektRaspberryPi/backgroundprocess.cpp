@@ -1,4 +1,5 @@
 #include "backgroundprocess.h"
+#include <QDebug>
 
 BackgroundProcess::BackgroundProcess(QObject *parent) : QThread(parent )
 {
@@ -28,6 +29,8 @@ void BackgroundProcess::setCondition(BackgroundProcess::ProcessCondition conditi
 {
     if (m_condition == condition)
         return;
+
+    qDebug() << "condition changed: " << condition;
 
     m_condition = condition;
     emit conditionChanged(condition);

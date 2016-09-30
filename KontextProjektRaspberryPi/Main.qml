@@ -1,7 +1,11 @@
 import QtQuick 2.4
 ////import Ubuntu.Components 1.3
 import QtQuick.Window 2.2 // Window.FullScreen
+import QtQuick.Controls 1.0
 import KontextProjektRaspberryPi 1.0
+
+
+
 ///*!
 //    \brief MainView with a Label and Button elements.
 //*/
@@ -68,63 +72,133 @@ import KontextProjektRaspberryPi 1.0
 //}
 
 
-Rectangle {
+StackView{
+
     width: Screen.width
     height: Screen.height
-    color: "gray"
-    Rectangle{
-        id:indicator
-        anchors.centerIn: parent
-        height: parent.height /2
-        width: parent.width /2
-        radius: parent.height /4
-        color: box.watchers[0].condition === BackgroundProcess.GREEN?"green":"red"
+    id: stack
+
+    MainForm {
+        id: main
+        objectName: "main"
+        color: "#39630a"
+//        anchors.rightMargin: 14
+//        anchors.bottomMargin: 0
+//        anchors.leftMargin: -14
+//        anchors.topMargin: 0
+        anchors.fill: parent
 
 
-        Text {
-            id:textField
-            anchors.centerIn: parent
-            text: box.helloWorld
-            color: "white"
+//        mouseArea.onClicked: {
+
+//            main.setVisible(false)
+//            scale.setVisible(true)
 
 
-            FoodBox {
-                id: box
-                //anchors.fill: parent
+//        }
 
-                lock.locked : box.watchers[0].condition === BackgroundProcess.GREEN
-
-
-                Component.onCompleted: {
-                    box.helloWorld = watchers[0].condition;
-
-                }
-                radioDial.onRotationLeft: {
-
-                    console.log("qml rotation left");
-                    indicator.rotation = indicator.rotation + 10;
-                }
-                radioDial.onRotationRight: {
-                    console.log("qml rotation right");
-                    indicator.rotation = indicator.rotation - 10;
-                }
-                radioDial.onClick: {
-                    console.log("qml radio dial click");
-                }
-                radioDial.onPressedChanged: {
-                    console.log("qml radio pressed:" + pressed);
-                    if(pressed){
-                        indicator.scale = indicator.scale * 1.5;
-                    } else {
-                        indicator.scale = indicator.scale * 2/3;
-                    }
-
-                    textField.color = pressed?"white":"black"
-                }
-
-
-            }
-        }
     }
 
+    ScaleForm{
+         id: scale
+         objectName: "scale"
+         visible: false
+         width: parent.width
+         height: parent.height
+
+         anchors.fill: parent
+
+
+     }
+
+     NoPermissionForm
+     {
+         id: nopermission
+         visible: false
+         width: parent.width
+         height: parent.height
+     }
+
+     ByeForm {
+         visible: false
+         width: parent.width
+         height: parent.height
+     }
+
+
+                    FoodBox {
+                        id: foodbox
+                        //anchors.fill: parent
+
+
+
+
+                        onTransactionAuthorized: {
+                            console.log("qml message:transaction authorized");
+                            stack.push(scale)
+                        }
+
+
+
+
+                        onTransactionDenied: {
+                            stack.push(nopermission)
+
+                            console.log("qml message:transaction denied");
+
+                            function Timer() {
+                                return Qt.createQmlObject("import QtQuick 2.0; Timer {}", box);
+                            }
+                            var timer = new Timer();
+                            timer.interval = 5000;
+                            timer.repeat = false;
+                            timer.triggered.connect(function () {
+                                stack.clear();
+                            })
+
+                            timer.start();
+                           ;
+                        }
+
+                        lock.onLockedChanged: {
+                            if(locked){
+                                console.log("locked again:"  + locked);
+                                //stack.currentItem.visible = false;
+                                stack.clear();
+                            }
+                        }
+
+
+//                        Component.onCompleted: {
+//                            box.helloWorld = watchers[0].condition;
+
+//                        }
+//                        radioDial.onRotationLeft: {
+
+//                            console.log("qml rotation left");
+//                            indicator.rotation = indicator.rotation - 10;
+//                        }
+//                        radioDial.onRotationRight: {
+//                            console.log("qml rotation right");
+//                            indicator.rotation = indicator.rotation + 10;
+//                        }
+//                        radioDial.onClick: {
+//                            console.log("qml radio dial click");
+//                        }
+//                        radioDial.onPressedChanged: {
+//                            console.log("qml radio pressed:" + pressed);
+//                            if(pressed){
+//                                indicator.scale = indicator.scale * 1.5;
+//                            } else {
+//                                indicator.scale = indicator.scale * 2/3;
+//                            }
+
+//                            textField.color = pressed?"white":"black"
+//                        }
+
+
+                    }
+
 }
+
+

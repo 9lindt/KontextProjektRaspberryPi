@@ -7,6 +7,8 @@
 #include <backgroundprocess.h>
 #include <ledlock.h>
 #include<QQmlListProperty>
+#include<nfcwatcher.h>
+#include <server.h>
 
 
 
@@ -23,7 +25,11 @@ class FoodBox : public QObject
     Q_PROPERTY(LEDLock * lock READ lock)
 
     Q_PROPERTY(GPIORotaryEncoder * radioDial READ radioDial)
-   // Q_PROPERTY(GPIOButton * backButton READ backButton)
+
+
+
+    Q_PROPERTY(GPIOButton * lidButton READ lidButton)
+    Q_PROPERTY(Server * server READ server)
 
 
 
@@ -32,10 +38,13 @@ class FoodBox : public QObject
     QList<BackgroundProcess *> m_watchers;
     QQmlListProperty<BackgroundProcess> m_qmlListWatchers;
 
-    LEDLock * m_lock;    
+    LEDLock * m_lock;
     GPIORotaryEncoder * m_radioDial;
-    GPIOButton * m_backButton;
+    GPIOButton * m_lidButton;
+    NfcWatcher * m_nfcWatcher;
 
+
+    Server * m_server;
 
 public:
     explicit FoodBox(QObject *parent = 0);
@@ -44,19 +53,18 @@ public:
     enum FoodBoxStateEnum { OPEN =0, CLOSED =1, PROCESSING=2};
 
     FoodBoxStateEnum state() const;
-
     QQmlListProperty<BackgroundProcess> watchers();
-
     LEDLock * lock() const;
-
     GPIORotaryEncoder * radioDial() const;
+    GPIOButton * lidButton() const;
+    Server * server() const;
 
-    GPIOButton * backButton() const;
 
 public slots:
     void setState(FoodBoxStateEnum state);
     void addWatcher(BackgroundProcess *watcher);
     void removeWatcher(BackgroundProcess * watcher);
+    void tryTransaction(char * tagId);
 
 Q_SIGNALS:
     void helloWorldChanged();
@@ -65,6 +73,10 @@ Q_SIGNALS:
 
     void watchersChanged(QQmlListProperty<BackgroundProcess> watchers);
 
+    void transactionAuthorized();
+    void transactionDenied();
+
+
 protected:
     QString helloWorld() { return m_message; }
     void setHelloWorld(QString msg);
@@ -72,6 +84,9 @@ protected:
     QString m_message;
     FoodBoxStateEnum m_state;
 
+    void serverHasAuthorizedTransaction();
+    void beginTransaction();
+    void finishTransaction();
     void runWatchers();
 
 };

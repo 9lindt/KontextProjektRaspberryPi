@@ -44,3 +44,5 @@ unittest.depends  = sub-KontextProjektRaspberryPi sub-backend-App
 QMAKE_EXTRA_TARGETS += aptest unittest
 
 
+unix: CONFIG += link_pkgconfig
+unix: PKGCONFIG += libnfc

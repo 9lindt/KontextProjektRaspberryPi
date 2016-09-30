@@ -18,7 +18,15 @@ SOURCES += \
     scale.cpp \
     gpiobutton.cpp \
     gpiorotaryencoder.cpp \
-    gpiopinwatcher.cpp
+    gpiopinwatcher.cpp \
+    nfcscanner.cpp \
+    nfcwatcher.cpp \
+    nfcApi/nfc-poll.c \
+    nfcApi/utils/mifare.c \
+    nfcApi/utils/nfc-emulate-forum-tag4.c \
+    nfcApi/utils/nfc-utils.c \
+    server.cpp \
+    transaction.cpp
 
 HEADERS += \
     backend.h \
@@ -30,7 +38,15 @@ HEADERS += \
     scale.h \
     gpiobutton.h \
     gpiorotaryencoder.h \
-    gpiopinwatcher.h
+    gpiopinwatcher.h \
+    nfcscanner.h \
+    nfcwatcher.h \
+    nfcApi/nfc-poll.h \
+    scaleApi/readscale.h \
+    nfcApi/utils/nfc-utils.h \
+    nfcApi/utils/mifare.h \
+    server.h \
+    transaction.h
 
 OTHER_FILES = qmldir
 
@@ -47,5 +63,7 @@ installPath = $${UBUNTU_CLICK_PLUGIN_PATH}/KontextProjektRaspberryPi
 qmldir.path = $$installPath
 target.path = $$installPath
 INSTALLS += target qmldir
+LIBS += -lnfc
+
 
 
